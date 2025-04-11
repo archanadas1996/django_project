@@ -2,7 +2,8 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('list/', views.list, name='list'),
+    path('', views.list, name='list'),
     path('create/', views.create, name='create'),
-    path('', views.list, name='home'),  # Default route to list view
+    path('edit/<int:pk>/', views.edit, name='edit'),
+    path('delete/<int:pk>/', views.delete, name='delete'),
 ] 

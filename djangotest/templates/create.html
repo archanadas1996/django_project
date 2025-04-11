@@ -1,49 +1,48 @@
-{% extends 'base.html' %}
-
-{% block title %}Create Movie{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% block title %}Create Movie{% endblock title %}
+{%block content %}
 <div class="row justify-content-center">
-    <div class="col-md-8">
-        <div class="card">
-            <div class="card-header bg-dark text-white">
-                <h4 class="card-title mb-0">Add New Movie</h4>
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header bg-dark text-white">
+        <h4 class="card-title mb-0">Add New Movie</h4>
+      </div>
+      <div class="card-body">
+        {% if form.errors %}
+        <div class="alert alert-danger">Please correct the errors below.</div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+          {% csrf_token %} {% for field in form %}
+          <div class="mb-3">
+            <label for="{{ field.id_for_label }}" class="form-label">
+              {{ field.label }} {% if field.field.required %}
+              <span class="text-danger">*</span>
+              {% endif %}
+            </label>
+            {{ field }} {% if field.errors %}
+            <div class="text-danger small mt-1">
+              {{ field.errors|join:", " }}
             </div>
-            <div class="card-body">
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="mb-3">
-                        <label for="title" class="form-label">Movie Title</label>
-                        <input type="text" class="form-control" id="title" name="title" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="year" class="form-label">Release Year</label>
-                        <input type="number" class="form-control" id="year" name="year" min="1900" max="2099" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="director" class="form-label">Director</label>
-                        <input type="text" class="form-control" id="director" name="director" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="rating" class="form-label">Rating</label>
-                        <input type="text" class="form-control" id="rating" name="rating" placeholder="e.g., 8.5/10" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="3" required></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="poster" class="form-label">Movie Poster</label>
-                        <input type="file" class="form-control" id="poster" name="poster" accept="image/*" required>
-                    </div>
-                    <div class="text-end">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save me-1"></i>Save Movie
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+            {% endif %} {% if field.help_text %}
+            <div class="form-text text-muted">{{ field.help_text }}</div>
+            {% endif %}
+          </div>
+          {% endfor %}
+
+          <div class="text-end">
+          
+            <a href="{% url 'list' %}" class="btn btn-secondary me-2">
+              <i class="fas fa-times me-1"></i>Cancel
+            </a>
+         
+
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save me-1"></i>Save Movie
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
-{% endblock %}
+{% endblock content %}

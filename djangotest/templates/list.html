@@ -33,38 +33,60 @@
     color: #ffc107;
     margin-right: 5px;
   }
+  .card-actions {
+    border-top: 1px solid rgba(0,0,0,.125);
+    padding-top: 1rem;
+    margin-top: 1rem;
+  }
 </style>
 {% endblock %} {% block content %}
-<h1 class="text-center mb-4">Movies Collection</h1>
-<div class="row g-4">
-  {% for movie in movies %}
-  <div class="col-md-6 col-lg-3">
-    <div class="card movie-card">
-      <img
-        src="{% static movie.poster %}"
-        class="movie-poster"
-        alt="{{ movie.title }}"
-      />
-      <div class="card-body">
-        <h5 class="movie-title">{{ movie.title }}</h5>
-        <div class="movie-info">
-          <p class="mb-2">
-            <i class="fas fa-star rating"></i>
-            <span>{{ movie.rating }}</span>
-          </p>
-          <p class="mb-2">
-            <i class="fas fa-calendar-alt me-2"></i>
-            {{ movie.year }}
-          </p>
-          <p class="mb-2">
-            <i class="fas fa-video me-2"></i>
-            {{ movie.director }}
-          </p>
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Movies Collection</h1>
+    {% comment %} <a href="{% url 'create' %}" class="btn btn-primary">
+      <i class="fas fa-plus me-1"></i>Add Movie
+    </a> {% endcomment %}
+  </div>
+  
+  <div class="row g-4">
+    {% for movie in movies %}
+    <div class="col-md-6 col-lg-3">
+      <div class="card movie-card">
+        <img
+          src="{% static movie.poster %}"
+          class="movie-poster"
+          alt="{{ movie.title }}"
+        />
+        <div class="card-body">
+          <h5 class="movie-title">{{ movie.title }}</h5>
+          <div class="movie-info">
+            <p class="mb-2">
+              <i class="fas fa-star rating"></i>
+              <span>{{ movie.rating }}</span>
+            </p>
+            <p class="mb-2">
+              <i class="fas fa-calendar-alt me-2"></i>
+              {{ movie.year }}
+            </p>
+            <p class="mb-2">
+              <i class="fas fa-video me-2"></i>
+              {{ movie.director }}
+            </p>
+          </div>
+          <p class="movie-description">{{ movie.description }}</p>
+          <div class="card-actions">
+        <a href="{% url 'edit' movie.pk %}" class="btn btn-sm btn-outline-primary me-2">
+              <i class="fas fa-edit me-1"></i>Edit
+            </a>
+            <a href="{% url 'delete' movie.pk %}" class="btn btn-sm btn-outline-danger">
+              <i class="fas fa-trash me-1"></i>Delete
+            </a> 
+            
+          </div>
         </div>
-        <p class="movie-description">{{ movie.description }}</p>
       </div>
     </div>
+    {% endfor %}
   </div>
-  {% endfor %}
 </div>
 {% endblock %}
