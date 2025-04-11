@@ -1,0 +1,70 @@
+{% extends 'base.html' %} {% load static %} {% block title %}Movie List
+{%endblock %} {% block extra_css %}
+<style>
+  .movie-card {
+    transition: transform 0.3s ease-in-out;
+    height: 100%;
+  }
+  .movie-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  }
+  .movie-poster {
+    height: 400px;
+    object-fit: cover;
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
+  }
+  .movie-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+  .movie-info {
+    color: #6c757d;
+    font-size: 0.9rem;
+  }
+  .movie-description {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin-top: 1rem;
+  }
+  .rating {
+    color: #ffc107;
+    margin-right: 5px;
+  }
+</style>
+{% endblock %} {% block content %}
+<h1 class="text-center mb-4">Movies Collection</h1>
+<div class="row g-4">
+  {% for movie in movies %}
+  <div class="col-md-6 col-lg-3">
+    <div class="card movie-card">
+      <img
+        src="{% static movie.poster %}"
+        class="movie-poster"
+        alt="{{ movie.title }}"
+      />
+      <div class="card-body">
+        <h5 class="movie-title">{{ movie.title }}</h5>
+        <div class="movie-info">
+          <p class="mb-2">
+            <i class="fas fa-star rating"></i>
+            <span>{{ movie.rating }}</span>
+          </p>
+          <p class="mb-2">
+            <i class="fas fa-calendar-alt me-2"></i>
+            {{ movie.year }}
+          </p>
+          <p class="mb-2">
+            <i class="fas fa-video me-2"></i>
+            {{ movie.director }}
+          </p>
+        </div>
+        <p class="movie-description">{{ movie.description }}</p>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
