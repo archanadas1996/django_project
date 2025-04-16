@@ -1,0 +1,137 @@
+{% extends 'firstapp/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Movies</h2>
+    
+    <!-- Filter Form -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Filter & Sort</h5>
+        </div>
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <!-- Search -->
+                <div class="col-md-6">
+                    <label for="search" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="search" name="search" value="{{ search_query }}" placeholder="Search by title or description">
+                </div>
+                
+                <!-- Year Filter -->
+                <div class="col-md-6">
+                    <label for="year" class="form-label">Year</label>
+                    <select class="form-select" id="year" name="year">
+                        <option value="">All Years</option>
+                        {% for year in years %}
+                            <option value="{{ year }}" {% if year_filter == year|stringformat:"s" %}selected{% endif %}>{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Director Filter -->
+                <div class="col-md-6">
+                    <label for="director" class="form-label">Director</label>
+                    <select class="form-select" id="director" name="director">
+                        <option value="">All Directors</option>
+                        {% for director in directors %}
+                            <option value="{{ director.id }}" {% if director_filter == director.id|stringformat:"s" %}selected{% endif %}>{{ director.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Actor Filter -->
+                <div class="col-md-6">
+                    <label for="actor" class="form-label">Actor</label>
+                    <select class="form-select" id="actor" name="actor">
+                        <option value="">All Actors</option>
+                        {% for actor in actors %}
+                            <option value="{{ actor.id }}" {% if actor_filter == actor.id|stringformat:"s" %}selected{% endif %}>{{ actor.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Censor Rating Filter -->
+                <div class="col-md-6">
+                    <label for="censor" class="form-label">Censor Rating</label>
+                    <select class="form-select" id="censor" name="censor">
+                        <option value="">All Ratings</option>
+                        {% for code, name in censor_ratings %}
+                            <option value="{{ code }}" {% if censor_filter == code %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Sort Options -->
+                <div class="col-md-6">
+                    <label for="sort" class="form-label">Sort By</label>
+                    <select class="form-select" id="sort" name="sort">
+                        <option value="title" {% if sort_by == 'title' %}selected{% endif %}>Title (A-Z)</option>
+                        <option value="-title" {% if sort_by == '-title' %}selected{% endif %}>Title (Z-A)</option>
+                        <option value="year" {% if sort_by == 'year' %}selected{% endif %}>Year (Oldest First)</option>
+                        <option value="-year" {% if sort_by == '-year' %}selected{% endif %}>Year (Newest First)</option>
+                        <option value="rating" {% if sort_by == 'rating' %}selected{% endif %}>Rating (Low to High)</option>
+                        <option value="-rating" {% if sort_by == '-rating' %}selected{% endif %}>Rating (High to Low)</option>
+                    </select>
+                </div>
+                
+                <!-- Filter Buttons -->
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Apply Filters</button>
+                    <a href="{% url 'movie_list' %}" class="btn btn-secondary">Clear Filters</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Results Count -->
+    <div class="alert alert-info">
+        Showing {{ movies|length }} movie{{ movies|length|pluralize }}
+    </div>
+    
+    <!-- Movie List -->
+    <div class="row">
+        {% for movie in movies %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    {% if movie.poster %}
+                        <img src="{{ movie.poster.url }}" class="card-img-top" alt="{{ movie.title }}" style="height: 300px; object-fit: cover;">
+                    {% else %}
+                        <div class="card-img-top bg-secondary text-white d-flex align-items-center justify-content-center" style="height: 300px;">
+                            No Poster Available
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ movie.title }} ({{ movie.year }})</h5>
+                        <p class="card-text">
+                            <strong>Director:</strong> {{ movie.director }}<br>
+                            <strong>Rating:</strong> {{ movie.rating }}<br>
+                            {% if movie.censor_details %}
+                                <strong>Censor Rating:</strong> {{ movie.censor_details.rating }}<br>
+                            {% endif %}
+                            {% if movie.directed_by %}
+                                <strong>Directed By:</strong> {{ movie.directed_by.name }}<br>
+                            {% endif %}
+                            {% if movie.actors.all %}
+                                <strong>Actors:</strong> 
+                                {% for actor in movie.actors.all %}
+                                    {{ actor.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                        </p>
+                        <div class="btn-group">
+                            <a href="{% url 'edit_movie' movie.id %}" class="btn btn-primary">Edit</a>
+                            <a href="{% url 'delete_movie' movie.id %}" class="btn btn-danger">Delete</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No movies found. <a href="{% url 'add_movie' %}">Add a movie</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %} 
