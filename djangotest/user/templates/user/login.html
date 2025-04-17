@@ -1,0 +1,152 @@
+{% extends 'firstapp/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-lg border-0 rounded-lg">
+                <div class="card-header bg-primary text-white text-center py-3">
+                    <h3 class="mb-0"><i class="fas fa-film me-2"></i>Movie Database</h3>
+                    <p class="mb-0 mt-1">Please sign in to continue</p>
+                </div>
+                <div class="card-body p-4">
+                    {% if messages %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }} alert-dismissible fade show custom-alert" role="alert">
+                                <div class="d-flex align-items-center">
+                                    <div class="alert-icon me-3">
+                                        {% if message.tags == 'success' %}
+                                            <i class="fas fa-check-circle fa-2x text-success"></i>
+                                        {% else %}
+                                            <i class="fas fa-exclamation-circle fa-2x text-danger"></i>
+                                        {% endif %}
+                                    </div>
+                                    <div class="alert-content">
+                                        <h5 class="alert-heading mb-1">
+                                            {% if message.tags == 'success' %}
+                                                Success!
+                                            {% else %}
+                                                {% if 'password' in message|lower %}
+                                                    Incorrect Password
+                                                {% elif 'username' in message|lower %}
+                                                    Username Not Found
+                                                {% else %}
+                                                    Error
+                                                {% endif %}
+                                            {% endif %}
+                                        </h5>
+                                        <p class="mb-0">{{ message }}</p>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fas fa-user"></i></span>
+                                <input type="text" class="form-control form-control-lg" id="username" name="username" value="{{ username|default:'' }}" placeholder="Username" required>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control form-control-lg" id="password" name="password" placeholder="Password" required>
+                            </div>
+                        </div>
+                        <div class="d-grid gap-2 mb-4">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                            </button>
+                        </div>
+                    </form>
+                    <div class="text-center">
+                        <p class="mb-0">Don't have an account? <a href="{% url 'user:signup' %}" class="text-primary fw-bold">Sign up here</a></p>
+                    </div>
+                </div>
+                <div class="card-footer text-center py-3 bg-light">
+                    <div class="small">
+                        <a href="#" class="text-muted">Forgot password?</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .card {
+        border-radius: 15px;
+        overflow: hidden;
+    }
+    .card-header {
+        border-bottom: none;
+    }
+    .input-group-text {
+        border: none;
+        color: #6c757d;
+    }
+    .form-control {
+        border-left: none;
+    }
+    .form-control:focus {
+        box-shadow: none;
+        border-color: #ced4da;
+    }
+    .btn-primary {
+        border-radius: 8px;
+        padding: 10px 20px;
+    }
+    .alert {
+        border-radius: 8px;
+        border-left: 4px solid;
+    }
+    .alert-danger {
+        border-left-color: #dc3545;
+        background-color: #fff;
+    }
+    .alert-success {
+        border-left-color: #198754;
+        background-color: #fff;
+    }
+    .custom-alert {
+        animation: slideIn 0.5s ease-out;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .alert-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+    .alert-success .alert-icon {
+        background-color: rgba(25, 135, 84, 0.1);
+    }
+    .alert-content {
+        flex: 1;
+    }
+    .alert-heading {
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    @keyframes slideIn {
+        0% {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+        100% {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+</style>
+{% endblock %} 

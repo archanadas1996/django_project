@@ -6,7 +6,9 @@ from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from django.db.models import Q
 from .utils import get_recently_viewed, set_recently_viewed_cookie
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def list(request):
     # Track visit count in session
     if 'visit_count' not in request.session:
@@ -87,12 +89,12 @@ def list(request):
         'censor_filter': censor_filter,
         'sort_by': sort_by,
         'recently_viewed': recently_viewed,
-        'visit_count': request.session['visit_count'],  # Add visit count to context
+        'visit_count': request.session['visit_count'],
     }
     
-    response = render(request, 'firstapp/list.html', context)
-    return response
+    return render(request, 'firstapp/list.html', context)
 
+@login_required
 def add_movie(request):
     if request.method == 'POST':
         form = MovieForm(request.POST, request.FILES)
@@ -126,6 +128,7 @@ def add_movie(request):
     
     return render(request, 'firstapp/add_movie.html', {'form': form})
 
+@login_required
 def edit_movie(request, movie_id):
     movie = get_object_or_404(MovieInformationData, pk=movie_id)
     
@@ -160,6 +163,7 @@ def edit_movie(request, movie_id):
     response = render(request, 'firstapp/edit_movie.html', {'form': form, 'movie': movie})
     return set_recently_viewed_cookie(response, viewed_movies)
 
+@login_required
 def delete_movie(request, movie_id):
     movie = get_object_or_404(MovieInformationData, pk=movie_id)
     if request.method == 'POST':
@@ -179,6 +183,7 @@ def add_censor_info(request):
         form = CensorInfoForm()
     return render(request, 'firstapp/add_censor_info.html', {'form': form})
 
+@login_required
 def add_director(request):
     if request.method == 'POST':
         form = DirectorForm(request.POST, request.FILES)
@@ -190,6 +195,7 @@ def add_director(request):
         form = DirectorForm()
     return render(request, 'firstapp/add_director.html', {'form': form})
 
+@login_required
 def add_actor(request):
     if request.method == 'POST':
         form = ActorForm(request.POST, request.FILES)
