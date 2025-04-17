@@ -5,8 +5,15 @@ from .forms import MovieForm, CensorInfoForm, DirectorForm, ActorForm
 from django.core.files.storage import FileSystemStorage
 from django.contrib import messages
 from django.db.models import Q
+from .utils import get_recently_viewed, set_recently_viewed_cookie
 
 def list(request):
+    # Track visit count in session
+    if 'visit_count' not in request.session:
+        request.session['visit_count'] = 1
+    else:
+        request.session['visit_count'] += 1
+    
     # Get filter parameters from request
     search_query = request.GET.get('search', '')
     year_filter = request.GET.get('year', '')
@@ -63,6 +70,10 @@ def list(request):
     # Get unique years for year filter
     years = MovieInformationData.objects.values_list('year', flat=True).distinct().order_by('year')
     
+    # Get recently viewed movies
+    recently_viewed_ids = [m['id'] for m in get_recently_viewed(request)]
+    recently_viewed = MovieInformationData.objects.filter(id__in=recently_viewed_ids)
+    
     context = {
         'movies': movies,
         'directors': directors,
@@ -75,9 +86,12 @@ def list(request):
         'actor_filter': actor_filter,
         'censor_filter': censor_filter,
         'sort_by': sort_by,
+        'recently_viewed': recently_viewed,
+        'visit_count': request.session['visit_count'],  # Add visit count to context
     }
     
-    return render(request, 'firstapp/list.html', context)
+    response = render(request, 'firstapp/list.html', context)
+    return response
 
 def add_movie(request):
     if request.method == 'POST':
@@ -114,6 +128,10 @@ def add_movie(request):
 
 def edit_movie(request, movie_id):
     movie = get_object_or_404(MovieInformationData, pk=movie_id)
+    
+    # Update recently viewed
+    viewed_movies = get_recently_viewed(request, movie_id)
+    
     if request.method == 'POST':
         form = MovieForm(request.POST, request.FILES, instance=movie)
         if form.is_valid():
@@ -126,7 +144,9 @@ def edit_movie(request, movie_id):
             
             # Save the movie first
             movie.save()
-
+            
+            # Now save the many-to-many relationships
+            form.save_m2m()
             
             # Explicitly set the actors
             if 'actors' in request.POST:
@@ -136,7 +156,9 @@ def edit_movie(request, movie_id):
             return redirect('movie_list')
     else:
         form = MovieForm(instance=movie)
-    return render(request, 'firstapp/edit_movie.html', {'form': form, 'movie': movie})
+    
+    response = render(request, 'firstapp/edit_movie.html', {'form': form, 'movie': movie})
+    return set_recently_viewed_cookie(response, viewed_movies)
 
 def delete_movie(request, movie_id):
     movie = get_object_or_404(MovieInformationData, pk=movie_id)
